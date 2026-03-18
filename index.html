@@ -452,10 +452,7 @@ body::before {
 const AUTH_KEY = 'athleta-auth';
 const AUTH_VAL = 'kaist2026';
 
-// ── Feedback endpoint ─────────────────────────────────────
-// Google Apps Script Web App URL을 여기에 입력하세요.
-// 설정 방법: README.md 참조
-const FEEDBACK_ENDPOINT = 'YOUR_APPS_SCRIPT_URL_HERE';
+const FEEDBACK_EMAIL = 'gyehyukim@kaist.ac.kr';
 
 // ── Case data ─────────────────────────────────────────────
 const CASES = [
@@ -651,12 +648,11 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeFeedback();
 });
 
-async function submitFeedback() {
+function submitFeedback() {
   const type    = document.getElementById('fb-type').value;
   const name    = document.getElementById('fb-name').value.trim() || '익명';
   const message = document.getElementById('fb-message').value.trim();
   const status  = document.getElementById('fb-status');
-  const btn     = document.getElementById('fb-submit-btn');
 
   if (!message) {
     status.textContent = '내용을 입력해 주세요.';
@@ -664,49 +660,11 @@ async function submitFeedback() {
     return;
   }
 
-  btn.disabled = true;
-  btn.textContent = '제출 중...';
-  status.textContent = '';
-
-  const payload = {
-    timestamp: new Date().toISOString(),
-    type, name, message,
-    page: location.href,
-  };
-
-  // Google Apps Script endpoint가 설정되지 않은 경우 mailto 폴백
-  if (!FEEDBACK_ENDPOINT || FEEDBACK_ENDPOINT === 'YOUR_APPS_SCRIPT_URL_HERE') {
-    const subject = encodeURIComponent('[Case Hub] ' + type);
-    const body = encodeURIComponent(
-      '유형: ' + type + '\n이름: ' + name + '\n\n' + message
-    );
-    window.open('mailto:gyehyukim@kaist.ac.kr?subject=' + subject + '&body=' + body);
-    status.textContent = '메일 앱이 열렸습니다. 전송 후 창을 닫아주세요.';
-    status.className = 'fb-status ok';
-    btn.disabled = false;
-    btn.textContent = '제출하기';
-    return;
-  }
-
-  try {
-    await fetch(FEEDBACK_ENDPOINT, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    status.textContent = '제출 완료! 소중한 의견 감사합니다.';
-    status.className = 'fb-status ok';
-    document.getElementById('fb-message').value = '';
-    document.getElementById('fb-name').value = '';
-    setTimeout(closeFeedback, 2000);
-  } catch (err) {
-    status.textContent = '오류가 발생했습니다. 이메일로 보내주세요: gyehyukim@kaist.ac.kr';
-    status.className = 'fb-status err';
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '제출하기';
-  }
+  const subject = encodeURIComponent('[Case Hub] ' + type);
+  const body = encodeURIComponent('유형: ' + type + '\n이름: ' + name + '\n\n' + message);
+  window.open('mailto:' + FEEDBACK_EMAIL + '?subject=' + subject + '&body=' + body);
+  status.textContent = '메일 앱이 열렸습니다. 전송 후 창을 닫아주세요.';
+  status.className = 'fb-status ok';
 }
 </script>
 </body>
