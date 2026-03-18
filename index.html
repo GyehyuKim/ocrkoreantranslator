@@ -405,7 +405,7 @@ body::before {
       </div>
       <div class="hub-footer-right">
         Gyehyu K &bull; KAIST IMMS<br>
-        개선 제안: <a href="mailto:diziba213@gmail.com?subject=Case Hub Feedback">diziba213@gmail.com</a>
+        개선 제안: <a href="mailto:gyehyukim@kaist.ac.kr?subject=Case Hub Feedback">gyehyukim@kaist.ac.kr</a>
       </div>
     </div>
   </footer>
@@ -680,7 +680,7 @@ async function submitFeedback() {
     const body = encodeURIComponent(
       '유형: ' + type + '\n이름: ' + name + '\n\n' + message
     );
-    window.open('mailto:diziba213@gmail.com?subject=' + subject + '&body=' + body);
+    window.open('mailto:gyehyukim@kaist.ac.kr?subject=' + subject + '&body=' + body);
     status.textContent = '메일 앱이 열렸습니다. 전송 후 창을 닫아주세요.';
     status.className = 'fb-status ok';
     btn.disabled = false;
@@ -701,7 +701,7 @@ async function submitFeedback() {
     document.getElementById('fb-name').value = '';
     setTimeout(closeFeedback, 2000);
   } catch (err) {
-    status.textContent = '오류가 발생했습니다. 이메일로 보내주세요: diziba213@gmail.com';
+    status.textContent = '오류가 발생했습니다. 이메일로 보내주세요: gyehyukim@kaist.ac.kr';
     status.className = 'fb-status err';
   } finally {
     btn.disabled = false;
