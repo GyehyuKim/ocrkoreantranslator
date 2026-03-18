@@ -139,6 +139,15 @@ header .sub { font-size: 11px; color: #99b4cc; }
 #chat-popup.minimized #chat-foot,
 #chat-popup.minimized #chat-ctx { display: none; }
 #chat-popup.minimized { border-radius: 12px; }
+.cmsg.help { background: #071929; border: 1px solid #2a4a6c; align-self: stretch; }
+.cmsg.help h4 { color: #7ec8ff; font-size: 11px; margin-bottom: 6px; }
+.cmsg.help ol { padding-left: 16px; margin: 4px 0 10px; color: #99bbdd; font-size: 11px; line-height: 1.8; }
+.cmsg.help a { color: #58a6ff; }
+.cmsg.help code { background: #030d18; color: #6eff8a; padding: 1px 5px; border-radius: 3px; font-size: 10px; font-family: monospace; }
+.prompt-box { background: #030d18; border: 1px solid #2a4060; border-radius: 6px; padding: 8px 10px; font-size: 11px; color: #99bbdd; font-family: monospace; line-height: 1.6; margin: 6px 0; white-space: pre-wrap; word-break: break-all; }
+.copy-btn { background: #1a6abf; color: #fff; border: none; border-radius: 6px; padding: 4px 12px; font-size: 11px; cursor: pointer; margin-top: 4px; }
+.copy-btn:hover { background: #2280df; }
+.copy-btn.copied { background: #0e4f1a; color: #6eff8a; }
 
 /* Password gate */
 #pw-gate {
@@ -535,6 +544,44 @@ let chatHistory = [];
 let chatMinimized = false;
 const currentModel = 'qwen3.5:2b';
 
+function showStaticHelp() {
+  const promptText =
+    'I\'m reading the HBS case "TimeCredit" (9-824-073).\n' +
+    'The following sentence is from the case:\n\n"' + chatContext + '"\n\n' +
+    'Please explain what this means in the context of venture capital investing. Answer in Korean.';
+
+  const d = document.createElement('div');
+  d.className = 'cmsg help';
+  d.innerHTML =
+    '<h4>Ollama 로컬 AI 설치 (5분)</h4>' +
+    '<ol>' +
+    '<li><a href="https://ollama.com" target="_blank">ollama.com</a> 다운로드 &amp; 설치</li>' +
+    '<li>터미널: <code>ollama pull qwen3.5:2b</code></li>' +
+    '<li>실행: <code>OLLAMA_ORIGINS=* ollama serve</code></li>' +
+    '<li>이 페이지 새로고침 → 배지가 초록으로 변경되면 준비 완료</li>' +
+    '</ol>' +
+    '<h4>대안: ChatGPT / Claude에 직접 질문</h4>' +
+    '<div class="prompt-box" id="static-prompt">' + escHtml(promptText) + '</div>' +
+    '<button class="copy-btn" id="copy-prompt-btn" onclick="copyPrompt()">프롬프트 복사</button>';
+
+  document.getElementById('chat-msgs').appendChild(d);
+  scrollChat();
+}
+
+function copyPrompt() {
+  const el = document.getElementById('static-prompt');
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent).then(() => {
+    const btn = document.getElementById('copy-prompt-btn');
+    btn.textContent = '복사됨!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '프롬프트 복사'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function updateAskBtn() {
   const btn = document.getElementById('ask-btn');
   if (!locked) { btn.style.display = 'none'; return; }
@@ -596,7 +643,7 @@ async function sendChat() {
   sendBtn.disabled = true;
 
   if (appMode !== 'local') {
-    addMsg('ai', 'AI 채팅은 Ollama 로컬 모드에서만 사용 가능합니다.\n설치: https://ollama.com → ollama pull qwen3.5:2b → OLLAMA_ORIGINS=* ollama serve');
+    showStaticHelp();
     sendBtn.disabled = false; return;
   }
 
